@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import datetime
 from dateutil import parser
+from docling.document_converter import DocumentConverter
 
 class OpenAINewsItem(BaseModel):
     title: str
@@ -60,7 +61,22 @@ if __name__ == "__main__":
     print("--- Fetching OpenAI News ---")
     news = scraper.get_latest_news()
     print(f"Found {len(news)} items.")
-    for item in news[:3]:
+    for item in news[:1]:
+        print("item is ", item)
+        print("item type is ", type(item))
+        print("item keys are ", item.model_dump().keys())
+        # dict=[]
+        # for key in item.model_dump().keys():
+        #     dict.append(item.model_dump()[key])
+        # itemDoc=dict
+        # print("itemDoc is ", itemDoc)
+        # print("itemDoc type is ", type(itemDoc))
+        converter = DocumentConverter()
+        doc = converter.convert(item.link).document
+        # print("doc is ", doc)
+        print("doc type is ", type(doc))
+        print("pritning the doc markdown\n\n")
+        print(doc.export_to_markdown())
         print(f"\nTitle: {item.title}")
         print(f"Date: {item.published}")
         print(f"Link: {item.link}")

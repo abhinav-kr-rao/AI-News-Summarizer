@@ -11,8 +11,12 @@ class OpenAINewsItem(BaseModel):
     published: str
     description: Optional[str] = None
     guid: Optional[str] = None
+    content_markdown: Optional[str] = None
 
 class OpenAIScraper:
+    def __init__(self):
+        self.converter = DocumentConverter()
+
     def get_latest_news(self, rss_url: str = "https://openai.com/news/rss.xml", limit: int = 10) -> List[OpenAINewsItem]:
         """
         Fetches the latest news from the OpenAI RSS feed.
@@ -56,27 +60,35 @@ class OpenAIScraper:
 
         return news_items
 
+    def scrape_article(self, url: str) -> Optional[str]:
+        """
+        Scrapes the content of a single article URL and converts it to Markdown.
+        """
+        try:
+            print(f"Scraping article: {url}")
+            result = self.converter.convert(url)
+            # Access the document and export to markdown
+            doc = result.document
+            markdown = doc.export_to_markdown()
+            return markdown
+        except Exception as e:
+            print(f"Error scraping article {url}: {e}")
+            return None
+
 if __name__ == "__main__":
     scraper = OpenAIScraper()
     print("--- Fetching OpenAI News ---")
-    news = scraper.get_latest_news()
+    news = scraper.get_latest_news(limit=3)
     print(f"Found {len(news)} items.")
-    for item in news[:1]:
-        print("item is ", item)
-        print("item type is ", type(item))
-        print("item keys are ", item.model_dump().keys())
-        # dict=[]
-        # for key in item.model_dump().keys():
-        #     dict.append(item.model_dump()[key])
-        # itemDoc=dict
-        # print("itemDoc is ", itemDoc)
-        # print("itemDoc type is ", type(itemDoc))
-        converter = DocumentConverter()
-        doc = converter.convert(item.link).document
-        # print("doc is ", doc)
-        print("doc type is ", type(doc))
-        print("pritning the doc markdown\n\n")
-        print(doc.export_to_markdown())
-        print(f"\nTitle: {item.title}")
-        print(f"Date: {item.published}")
+    
+    for item in news[:1]: # Test scraping on the first item
+        print(f"\nProcessing: {item.title}")
         print(f"Link: {item.link}")
+        
+        markdown_content = scraper.scrape_article(item.link)
+        if markdown_content:
+            print("--- Markdown Content Preview ---")
+            print(markdown_content[:500] + "...") # Print first 500 chars
+            item.content_markdown = markdown_content
+        else:
+            print("Failed to scrape markdown content.")

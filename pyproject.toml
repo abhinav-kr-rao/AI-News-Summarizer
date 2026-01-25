@@ -10,6 +10,7 @@ dependencies = [
     "feedparser>=6.0.12",
     "google-generativeai>=0.8.6",
     "psycopg2-binary>=2.9.11",
+    "pydantic>=2.12.5",
     "python-dateutil>=2.9.0.post0",
     "python-dotenv>=1.2.1",
     "requests>=2.32.5",

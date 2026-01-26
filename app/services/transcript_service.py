@@ -14,7 +14,10 @@ def get_video_transcript(video_id: str) -> Optional[str]:
     """
     try:
         # Use the API to fetch the transcript object
-        transcript = YouTubeTranscriptApi().fetch(video_id)
+        ytt=YouTubeTranscriptApi()
+        transcript = ytt.fetch(video_id)
+
+        print("the transcript is ", transcript)
         
         # Convert to raw data (list of dicts) to avoid 'not subscriptable' error
         # with newer library versions
@@ -29,7 +32,7 @@ def get_video_transcript(video_id: str) -> Optional[str]:
 
 if __name__ == "__main__":
     # Simple test
-    test_id = "T-kiZ_K1XtY"
+    test_id = "1fu2X4MSCPQ"
     print(f"Fetching transcript for {test_id}...")
     text = get_video_transcript(test_id)
     if text:

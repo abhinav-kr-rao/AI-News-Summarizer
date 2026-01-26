@@ -15,11 +15,20 @@ def create_article(db: Session, article_data: dict):
         source=article_data.get("source"),
         published_date=str(article_data.get("date")), # Ensure string if model expects string
         url=article_data.get("link"),
-        type=article_data.get("type")
+        type=article_data.get("type"),
+        content=article_data.get("content")
     )
     db.add(db_article)
     db.commit()
     db.refresh(db_article)
+    return db_article
+
+def update_article_content(db: Session, article_id: int, content: str):
+    db_article = db.query(models.Article).filter(models.Article.id == article_id).first()
+    if db_article:
+        db_article.content = content
+        db.commit()
+        db.refresh(db_article)
     return db_article
 
 def get_articles(db: Session, skip: int = 0, limit: int = 100):

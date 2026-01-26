@@ -11,6 +11,7 @@ from app.scrapers.youtube import YoutubeScrape
 from app.scrapers.openai_scraper import OpenAIScraper
 from app.scrapers.anthropic_scraper import AnthropicScraper
 from app.database import crud, database
+from app.services.content_extractor import ContentExtractor
 
 def is_within_lookback(date_str, hours):
     """
@@ -129,6 +130,10 @@ def collect_all_news():
         saved_count = 0
         for item in all_news:
             try:
+                # Enrich with content (transcripts/markdown)
+                # print(f"   > Fetching content for: {item.get('title')[:30]}...")
+                item = ContentExtractor.enrich_article(item)
+                
                 crud.create_article(db, item)
                 saved_count += 1
             except Exception as e:

@@ -33,3 +33,18 @@ def update_article_content(db: Session, article_id: int, content: str):
 
 def get_articles(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Article).offset(skip).limit(limit).all()
+
+def get_digest_by_article_id(db: Session, article_id: int):
+    return db.query(models.Digest).filter(models.Digest.article_id == article_id).first()
+
+def create_digest(db: Session, digest_data: dict):
+    db_digest = models.Digest(
+        article_id=digest_data.get("article_id"),
+        title=digest_data.get("title"),
+        summary=digest_data.get("summary")
+    )
+    db.add(db_digest)
+    db.commit()
+    db.refresh(db_digest)
+    return db_digest
+

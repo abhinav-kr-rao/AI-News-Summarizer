@@ -10,6 +10,7 @@ from app.config import YOUTUBE_CHANNELS, LOOKBACK_HOURS
 from app.scrapers.youtube import YoutubeScrape
 from app.scrapers.openai_scraper import OpenAIScraper
 from app.scrapers.anthropic_scraper import AnthropicScraper
+from app.database import crud, database
 
 def is_within_lookback(date_str, hours):
     """
@@ -120,6 +121,23 @@ def collect_all_news():
         print(f"   - Found {count} items within last {LOOKBACK_HOURS} hours")
     except Exception as e:
          print(f"   ! Error: {e}")
+
+    # Save to Database
+    print("\n>>> Saving to Database...")
+    db = database.SessionLocal()
+    try:
+        saved_count = 0
+        for item in all_news:
+            try:
+                crud.create_article(db, item)
+                saved_count += 1
+            except Exception as e:
+                print(f"   ! Failed to save article {item.get('title')}: {e}")
+        print(f"   - processed {saved_count} articles for database storage.")
+    except Exception as e:
+        print(f"   ! Database Connection Error: {e}")
+    finally:
+        db.close()
 
     return [all_news, youtube_news, openai_news, anthropic_news]
 

@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models
+from datetime import datetime, timedelta
 
 def get_article_by_url(db: Session, url: str):
     return db.query(models.Article).filter(models.Article.url == url).first()
@@ -47,4 +48,9 @@ def create_digest(db: Session, digest_data: dict):
     db.commit()
     db.refresh(db_digest)
     return db_digest
+
+def get_recent_digests(db: Session, hours: int = 24):
+    cutoff_time = datetime.utcnow() - timedelta(hours=hours)
+    return db.query(models.Digest).filter(models.Digest.created_at >= cutoff_time).all()
+
 

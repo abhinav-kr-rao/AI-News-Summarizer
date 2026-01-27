@@ -18,8 +18,8 @@ POSTGRES_DB = os.getenv("POSTGRES_DB", "ai_news_db")
 print("env variables loaded successfully")
 SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
-print("username is: ", POSTGRES_USER)
-print("password is: ",POSTGRES_PASSWORD)
+# print("username is: ", POSTGRES_USER)
+# print("password is: ",POSTGRES_PASSWORD)
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

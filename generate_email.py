@@ -9,6 +9,8 @@ from app.agents.ranking_agent import RankingAgent
 from app.agents.email_agent import EmailAgent
 from app.user_profile import default_profile
 
+from app.services.email_service import send_email
+
 def generate_daily_email():
     print("--- Generating Daily Email ---")
     db = database.SessionLocal()
@@ -74,6 +76,16 @@ def generate_daily_email():
         print(f"\nEmail generated successfully! Saved to {output_file}")
         print(f"Subject: {email_content.subject}")
         print("You can open this file in your browser to preview.")
+        
+        # 5. Send Email
+        print("Sending email...")
+        # Recipient: User configured, or fallback to GMAIL_ID (sending to self)
+        # Ideally, UserProfile should have an email field. Using GMAIL_ID for now as per user request.
+        recipient = os.getenv("GMAIL_ID") 
+        if recipient:
+            send_email(recipient, email_content.subject, email_html)
+        else:
+            print("GMAIL_ID not set. Skipping email send.")
 
     finally:
         db.close()

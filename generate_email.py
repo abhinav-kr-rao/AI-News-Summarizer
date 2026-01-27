@@ -29,6 +29,7 @@ def generate_daily_email():
             digest_map[d.id] = d
 
         # Rank
+        print("Ranking stories...")
         rank_agent = RankingAgent()
         ranked_items = rank_agent.rank_digests(default_profile, digest_list)
         ranked_items.sort(key=lambda x: x.score, reverse=True)
@@ -36,11 +37,10 @@ def generate_daily_email():
         # Take Top 10
         top_10 = ranked_items[:10]
         
-        print(f"identifying top {len(top_10)} stories...")
+        print(f"Identifying top {len(top_10)} stories...")
         
         # Prepare Data for Email
         email_data = []
-        top_titles = []
         
         for item in top_10:
             original = digest_map.get(item.digest_id)
@@ -54,17 +54,17 @@ def generate_daily_email():
                     "url": article.url, # Access via relationship
                     "date": str(article.published_date), # Ensure string
                     "reasoning": item.reasoning,
-                    "summary": original.summary
+                    "summary": original.summary # Original summary to be rewritten
                 })
-                top_titles.append(original.title)
 
-        # 2. Generate Intro
+        # 2. Generate Newsletter Content (Structured Pydantic Model)
+        print("Generating structured newsletter content...")
         email_agent = EmailAgent()
-        intro = email_agent.generate_intro(default_profile.name, top_titles)
-        print(f"Generated Intro: {intro}")
+        email_content = email_agent.generate_newsletter(default_profile.name, email_data)
         
-        # 3. Format Email
-        email_html = email_agent.format_email(default_profile.name, intro, email_data)
+        # 3. Render to HTML
+        print("Rendering HTML...")
+        email_html = email_agent.render_html(email_content)
         
         # 4. Save/Print
         output_file = "daily_digest.html"
@@ -72,6 +72,7 @@ def generate_daily_email():
             f.write(email_html)
             
         print(f"\nEmail generated successfully! Saved to {output_file}")
+        print(f"Subject: {email_content.subject}")
         print("You can open this file in your browser to preview.")
 
     finally:

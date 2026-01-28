@@ -1,18 +1,21 @@
-from app.database import database, models
+from app.database import database, crud, models
+from sqlalchemy import select
 
-def inspect_data():
+def check_urls():
     db = database.SessionLocal()
     try:
-        articles = db.query(models.Article).order_by(models.Article.created_at.desc()).limit(5).all()
-        print(f"--- Database Inspection (Top {len(articles)} recent) ---")
-        for a in articles:
-            content_status = f"✅ (Length: {len(a.content)})" if a.content else "❌ None"
-            print(f"ID: {a.id} | Type: {a.type} | Source: {a.source}")
-            print(f"Title: {a.title[:50]}...")
-            print(f"Content: {content_status}")
+        stmt = select(models.Article).order_by(models.Article.id.desc()).limit(10)
+        articles = db.scalars(stmt).all()
+        
+        print(f"Checking top {len(articles)} recent articles:")
+        for article in articles:
+            print(f"ID: {article.id}")
+            print(f"Title: {article.title}")
+            print(f"URL: {article.url}")
+            print(f"Source: {article.source}")
             print("-" * 30)
     finally:
         db.close()
 
 if __name__ == "__main__":
-    inspect_data()
+    check_urls()

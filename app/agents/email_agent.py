@@ -66,12 +66,11 @@ class EmailAgent:
             f"Today is {datetime.now().strftime('%A, %B %d')}.\n\n"
             f"Task: Create a structured email newsletter from the following top news items.\n"
             f"Requirements:\n"
-            f"1. **Subject**: Catchy and relevant to the key themes.\n"
+            f"1. **Subject**: MUST start with 'Daily News AI Digest...' followed by a short highlight of the top story.\n"
             f"2. **Intro**: Friendly, professional, mentioning top trends.\n"
             f"3. **Sections**: For each news item, write a structured section.\n"
-            f"   - **Summary**: Rewrite the summary to be engaging and formatted in **Markdown**. "
-            f"Use **### headers** for internal structure if deep diving. "
-            f"Avoid simple numbered lists; use paragraphs and bullet points where appropriate.\n"
+            f"   - **URL**: You MUST use the EXACT URL provided in the input. Do NOT hallucinate or change the link.\n"
+            f"   - **Summary**: A concise, informative summary of the news. Do NOT use markdown headers strings like '###'. Use clear paragraphs.\n"
             f"   - **Category**: Classify the news.\n\n"
             f"Input Data:\n{items_text}"
         )
@@ -96,70 +95,69 @@ class EmailAgent:
 
     def render_html(self, content: EmailContent) -> str:
         """
-        Renders the EmailContent model into an HTML string.
+        Renders the EmailContent model into a clean, minimal HTML string.
         """
-        def md_to_html(text):
-            # Very basic markdown converter
-            # Bold
+        def simple_format(text):
+            # Convert basic markdown bold to html bold
             text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
-            # Headers ###
-            text = re.sub(r'### (.*?)\n', r'<h4>\1</h4>', text)
-            # Bullets
-            text = re.sub(r'- (.*?)\n', r'<li>\1</li>', text)
-            # Wrap bullets in ul (simplistic)
-            if '<li>' in text:
-                text = text.replace('<li>', '<ul><li>', 1) # This is hacky, but robust options need regex blocks
-                # Better: just leave as is, CSS handles it or browsers handle text.
-                # Let's do a slightly better bullet handler:
-                lines = text.split('\n')
-                in_list = False
-                new_lines = []
-                for line in lines:
-                    if line.startswith('<li>'):
-                        if not in_list:
-                            new_lines.append('<ul>')
-                            in_list = True
-                    else:
-                        if in_list:
-                            new_lines.append('</ul>')
-                            in_list = False
-                    new_lines.append(line)
-                if in_list: new_lines.append('</ul>')
-                text = "\n".join(new_lines)
-            
-            # Paragraphs (double newlines)
+            # Convert newlines to breaks
             text = text.replace('\n\n', '<br><br>')
             return text
 
         sections_html = ""
         for section in content.sections:
-            summary_html = md_to_html(section.summary)
+            summary_html = simple_format(section.summary)
             sections_html += f"""
-                <div style="margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
-                    <span style="background-color: #eef; color: #33a; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">{section.category}</span>
-                    <h3 style="margin-top: 5px;"><a href="{section.url}" style="color: #2c3e50; text-decoration: none;">{section.title}</a></h3>
-                    <p style="font-size: 0.9em; color: #888; margin-bottom: 10px;">{section.date}</p>
-                    <div style="font-family: inherit; line-height: 1.6;">
+                <div style="margin-bottom: 35px; border-bottom: 1px solid #eee; padding-bottom: 25px;">
+                    <div style="font-size: 0.85em; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                        {section.category} &bull; {section.date}
+                    </div>
+                    <h2 style="margin: 0 0 10px 0; font-size: 1.4em; font-weight: 600; line-height: 1.3;">
+                        <a href="{section.url}" style="color: #111; text-decoration: none; border-bottom: 1px solid #111;">
+                            {section.title}
+                        </a>
+                    </h2>
+                    <div style="font-family: Georgia, serif; font-size: 1.05em; line-height: 1.6; color: #333; margin-bottom: 15px;">
                         {summary_html}
+                    </div>
+                    <div>
+                        <a href="{section.url}" style="font-size: 0.9em; color: #0066cc; text-decoration: none; font-weight: 500;">
+                            Read Source &rarr;
+                        </a>
                     </div>
                 </div>
             """
 
         html = f"""
+        <!DOCTYPE html>
         <html>
-        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: auto; padding: 20px;">
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
-                <h1 style="color: #2c3e50; text-align: center;">{content.subject}</h1>
-                <p style="font-size: 1.1em; color: #555; text-align: center;">{datetime.now().strftime("%B %d, %Y")}</p>
-                <hr>
-                <div style="font-size: 1.1em; margin-bottom: 30px;">
-                    {content.intro}
-                </div>
-                {sections_html}
-                <div style="text-align: center; color: #aaa; font-size: 0.8em; margin-top: 50px;">
-                    Generated by AI News Aggregator
-                </div>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #111; max-width: 680px; margin: 0 auto; padding: 40px 20px;">
+            
+            <!-- Header -->
+            <div style="margin-bottom: 40px; text-align: center;">
+                <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Daily News AI Digest</h1>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
+                    {datetime.now().strftime("%A, %B %d, %Y")}
+                </p>
             </div>
+
+            <!-- Intro -->
+            <div style="margin-bottom: 40px; font-family: Georgia, serif; font-size: 1.1em; color: #444; border-left: 3px solid #111; padding-left: 20px;">
+                {simple_format(content.intro)}
+            </div>
+
+            <!-- Sections -->
+            {sections_html}
+
+            <!-- Footer -->
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px;">
+                <p>&copy; {datetime.now().year} AI News Aggregator. All rights served.</p>
+            </div>
+
         </body>
         </html>
         """

@@ -1,7 +1,7 @@
 # Configuration for AI News Scraper
 
 # How far back to look for news (in hours)
-LOOKBACK_HOURS = 150
+LOOKBACK_HOURS = 24
 
 # List of YouTube Channel IDs to monitor
 YOUTUBE_CHANNELS = [

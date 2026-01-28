@@ -14,14 +14,23 @@ class UserProfile(BaseModel):
 
 # Default Profile - User should edit this
 default_profile = UserProfile(
-    name="Shashank",
+    name="Abhinav",
     interests=[
-        "Large Language Models (LLMs)",
-        "Generative AI Agents",
-        "OpenAI o1 and reasoning models",
-        "Anthropic Claude updates",
-        "AI Architecture and System Design",
-        "Python and FastAi"
+        "Technology",
+        "AI",
+        "Software Engineering",
+        "Programming",
+        "Operating Systems",
+        "Machine Learning",
+        "Deep Learning",
+        "Data Science",
+        "Data Engineering",
+        "Data Analysis",
+        "Data Visualization",
+        "Data Science",
+        "Data Engineering",
+        "Data Analysis",
+        "Data Visualization",
     ],
     technical_level="Expert"
 )

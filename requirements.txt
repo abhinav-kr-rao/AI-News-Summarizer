@@ -8,3 +8,4 @@ python-dotenv
 docling
 youtube-transcript-api
 requests
+trafilatura

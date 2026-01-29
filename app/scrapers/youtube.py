@@ -2,8 +2,20 @@ import feedparser
 import datetime
 from dateutil import parser
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import WebshareProxyConfig
+
 from typing import List, Dict, Optional
 import time
+
+import requests
+requests.get(
+    "https://ipv4.webshare.io/",
+    proxies={
+        "http": "http://ououtgyr-rotate:g1l96k25mr14@p.webshare.io:80/",
+        "https": "http://ououtgyr-rotate:g1l96k25mr14@p.webshare.io:80/"
+    }
+).text
+
 
 from pydantic import BaseModel
 
@@ -77,8 +89,15 @@ class YoutubeScrape:
         """
         try:
             # video_id="T-kiZ_K1XtY"
+
+            # getting proxy username and password 
+            proxy_username=os.getenv("WEBSHARE_USERNAME")
+            proxy_password=os.getenv("WEBSHARE_PASSWORD")
             print("Video ID: ", video_id)
-            ytt_api=YouTubeTranscriptApi()
+            ytt_api=YouTubeTranscriptApi(proxy_config=WebshareProxyConfig(
+        proxy_username=proxy_username,
+        proxy_password=proxy_password,
+    ))
             transcript = ytt_api.fetch(video_id)
             transcript_list=transcript.to_raw_data()
             # print("Transcript List: ", transcript_list)

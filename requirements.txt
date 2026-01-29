@@ -7,3 +7,4 @@ pydantic
 python-dotenv
 docling
 youtube-transcript-api
+requests

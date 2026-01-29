@@ -6,13 +6,20 @@ from youtube_transcript_api.proxies import WebshareProxyConfig
 
 from typing import List, Dict, Optional
 import time
+import os
+
+
+webshare_username=os.getenv("WEBSHARE_USERNAME")
+webshare_domain=os.getenv("WEBSHARE_DOMAIN_NAME")
+webshare_password=os.getenv("WEBSHARE_PASSWORD")
+webshare_port=os.getenv("WEBSHARE_PORT")
 
 import requests
 requests.get(
     "https://ipv4.webshare.io/",
     proxies={
-        "http": "http://ououtgyr-rotate:g1l96k25mr14@p.webshare.io:80/",
-        "https": "http://ououtgyr-rotate:g1l96k25mr14@p.webshare.io:80/"
+        "http": f"http://{webshare_username}:{webshare_password}@{webshare_domain}:{webshare_port}/",
+        "https": f"http://{webshare_username}:{webshare_password}@{webshare_domain}:{webshare_port}/"
     }
 ).text
 
@@ -91,12 +98,11 @@ class YoutubeScrape:
             # video_id="T-kiZ_K1XtY"
 
             # getting proxy username and password 
-            proxy_username=os.getenv("WEBSHARE_USERNAME")
-            proxy_password=os.getenv("WEBSHARE_PASSWORD")
+      
             print("Video ID: ", video_id)
             ytt_api=YouTubeTranscriptApi(proxy_config=WebshareProxyConfig(
-        proxy_username=proxy_username,
-        proxy_password=proxy_password,
+        proxy_username=webshare_username,
+        proxy_password=webshare_password,
     ))
             transcript = ytt_api.fetch(video_id)
             transcript_list=transcript.to_raw_data()

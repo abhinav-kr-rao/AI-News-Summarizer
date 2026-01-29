@@ -31,6 +31,8 @@ default_profile = UserProfile(
         "Data Engineering",
         "Data Analysis",
         "Data Visualization",
+        "Stock Market",
+        "Finance",
     ],
     technical_level="Expert"
 )

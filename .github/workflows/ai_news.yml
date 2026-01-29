@@ -1,0 +1,26 @@
+name: Daily AI News Digest
+
+on:
+  schedule:
+    # Runs at 2:00 AM UTC everyday
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  daily-digest:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Pipeline
+        env:
+          # Secrets configured in GitHub Repository Settings -> Secrets and variables -> Actions
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GMAIL_ID: ${{ secrets.GMAIL_ID }}
+          WEBSHARE_USERNAME: ${{ secrets.WEBSHARE_USERNAME }}
+          WEBSHARE_PASSWORD: ${{ secrets.WEBSHARE_PASSWORD }}
+        run: |
+          docker compose -f docker/docker-compose.yml up --build --abort-on-container-exit

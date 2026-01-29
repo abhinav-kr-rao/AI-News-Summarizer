@@ -7,4 +7,5 @@ LOOKBACK_HOURS = 24
 YOUTUBE_CHANNELS = [
     "UCvWWf-LYjaujE50iYai8WgQ", # OpenAI
     "UC16niRr50-MSBwiO3YDb3RA", # YCombinator
+    "UCmRbHAgG2k2vDUvb3xsEunQ",# CNBC news
 ]

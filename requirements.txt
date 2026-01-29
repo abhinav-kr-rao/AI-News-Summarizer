@@ -1,0 +1,9 @@
+google-genai
+sqlalchemy
+psycopg2-binary
+feedparser
+python-dateutil
+pydantic
+python-dotenv
+docling
+youtube-transcript-api

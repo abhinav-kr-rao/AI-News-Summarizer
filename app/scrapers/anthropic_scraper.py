@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import datetime
 from dateutil import parser
-from docling.document_converter import DocumentConverter
+import trafilatura
 
 class AnthropicNewsItem(BaseModel):
     title: str
@@ -22,7 +22,7 @@ class AnthropicScraper:
     ]
 
     def __init__(self):
-        self.converter = DocumentConverter()
+        pass
 
     def get_latest_news(self, limit_per_feed: int = 5) -> List[AnthropicNewsItem]:
         """
@@ -90,14 +90,16 @@ class AnthropicScraper:
 
     def scrape_article(self, url: str) -> Optional[str]:
         """
-        Scrapes the content of a single article URL and converts it to Markdown.
+        Scrapes the content of a single article URL and converts it to Markdown using Trafilatura.
         """
         try:
             print(f"Scraping article: {url}")
-            result = self.converter.convert(url)
-            doc = result.document
-            markdown = doc.export_to_markdown()
-            return markdown
+            downloaded = trafilatura.fetch_url(url)
+            if downloaded:
+                # Extract content in Markdown format
+                result = trafilatura.extract(downloaded, output_format="markdown")
+                return result
+            return None
         except Exception as e:
             print(f"Error scraping article {url}: {e}")
             return None

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import datetime
 from dateutil import parser
-from docling.document_converter import DocumentConverter
+import trafilatura
 
 class OpenAINewsItem(BaseModel):
     title: str
@@ -15,7 +15,7 @@ class OpenAINewsItem(BaseModel):
 
 class OpenAIScraper:
     def __init__(self):
-        self.converter = DocumentConverter()
+        pass
 
     def get_latest_news(self, rss_url: str = "https://openai.com/news/rss.xml", limit: int = 10) -> List[OpenAINewsItem]:
         """
@@ -62,15 +62,16 @@ class OpenAIScraper:
 
     def scrape_article(self, url: str) -> Optional[str]:
         """
-        Scrapes the content of a single article URL and converts it to Markdown.
+        Scrapes the content of a single article URL and converts it to Markdown using Trafilatura.
         """
         try:
             print(f"Scraping article: {url}")
-            result = self.converter.convert(url)
-            # Access the document and export to markdown
-            doc = result.document
-            markdown = doc.export_to_markdown()
-            return markdown
+            downloaded = trafilatura.fetch_url(url)
+            if downloaded:
+                # Extract content in Markdown format
+                result = trafilatura.extract(downloaded, output_format="markdown")
+                return result
+            return None
         except Exception as e:
             print(f"Error scraping article {url}: {e}")
             return None

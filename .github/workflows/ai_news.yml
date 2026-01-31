@@ -20,7 +20,10 @@ jobs:
           NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GMAIL_ID: ${{ secrets.GMAIL_ID }}
+          GOOGLE_APP_PASSWORD: ${{ secrets.GOOGLE_APP_PASSWORD }}
           WEBSHARE_USERNAME: ${{ secrets.WEBSHARE_USERNAME }}
           WEBSHARE_PASSWORD: ${{ secrets.WEBSHARE_PASSWORD }}
+          WEBSHARE_DOMAIN_NAME: ${{ secrets.WEBSHARE_DOMAIN_NAME }}
+          WEBSHARE_PORT: ${{ secrets.WEBSHARE_PORT }}
         run: |
           docker compose -f docker/docker-compose.yml up --build --abort-on-container-exit

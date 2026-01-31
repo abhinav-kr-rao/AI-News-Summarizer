@@ -14,14 +14,14 @@ webshare_domain=os.getenv("WEBSHARE_DOMAIN_NAME")
 webshare_password=os.getenv("WEBSHARE_PASSWORD")
 webshare_port=os.getenv("WEBSHARE_PORT")
 
-# import requests
-# requests.get(
-#     "https://ipv4.webshare.io/",
-#     proxies={
-#         "http": f"http://{webshare_username}:{webshare_password}@{webshare_domain}:{webshare_port}/",
-#         "https": f"http://{webshare_username}:{webshare_password}@{webshare_domain}:{webshare_port}/"
-#     }
-# ).text
+import requests
+requests.get(
+    "https://ipv4.webshare.io/",
+    proxies={
+        "http": f"http://{webshare_username}:{webshare_password}@{webshare_domain}:{webshare_port}/",
+        "https": f"http://{webshare_username}:{webshare_password}@{webshare_domain}:{webshare_port}/"
+    }
+).text
 
 
 from pydantic import BaseModel
